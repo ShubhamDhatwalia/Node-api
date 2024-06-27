@@ -17,7 +17,7 @@ app.use((req, res, next)=>{
 })
 
 app.use((req, res, next)=>{
-  console.log("Middleware 2" + req.userName);
+  console.log("Middleware 2 " + req.userName);
   next();
 })
 

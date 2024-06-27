@@ -8,10 +8,29 @@ const fs = require("fs");
 // ---------------- Middleware --------------
 app.use(express.urlencoded({ extended: false }));
 
+app.use((req, res, next)=>{
+  console.log("Middleware 1");
+  req.userName = "shubhamdhatwalia";
+
+  fs.appendFile("./log.txt", `\n${Date.now()}    ${req.ip}    ${req.method}    ${req.path}`, (err, data)=>{next();})
+  
+})
+
+app.use((req, res, next)=>{
+  console.log("Middleware 2" + req.userName);
+  next();
+})
+
+
 // ------------- Routes ---------------------
 
 app.get("/api/users", (req, res) => {
-  return res.json(users);
+
+  console.log(req.url);
+
+  res.setHeader('X-MyName', "Shubham");
+  console.log(req.userName);
+  return res.status(200).json(users);
 });
 
 app.get("/users", (req, res) => {
@@ -28,6 +47,12 @@ app
     const id = Number(req.params.id);
 
     const user = users.find((user) => user.id === id);
+
+    if(!user){
+      console.log(`No user Exists with ID: ${id}`);
+    return res.status(400).json({status: "error", message: `No user exists with ID : ${id}`});
+
+    }
     return res.json(user);
   })
 
@@ -38,6 +63,11 @@ app.patch("/api/users/:id", (req, res) => {
 
   // Find the user in the array by id
   const user = users.find((user) => user.id === id);
+
+  if(!user){
+    console.log(`No user Exists with ID: ${id}`);
+    return res.status(400).json({status: "error", message: `No user exists with ID : ${id}`});
+  }
 
   // If user with given id exists
   if (user) {
@@ -59,6 +89,10 @@ app.patch("/api/users/:id", (req, res) => {
     if (body.job_title) {
       user.job_title = body.job_title;
     }
+    if(!body || Object.keys(body).length === 0){
+      console.log("no data provided for edit");
+      return res.status(400).json({status: "error", message: "No data provided for edit"});
+    }
 
     // Write updated users array to file synchronously
   
@@ -67,7 +101,7 @@ app.patch("/api/users/:id", (req, res) => {
           console.error(err);
            return res.json({ status: "error", message: "Failed to update user data" });
         }
-        return res.json({ status: "success", data: user });
+        return res.status(201).json({ status: "success", data: user });
       });
     
     }
@@ -79,7 +113,7 @@ app.patch("/api/users/:id", (req, res) => {
 
   
 
-  .delete((req, res) => {
+  app.delete("/api/users/:id", (req, res) => {
     const id = Number(req.params.id);
 
     const index = users.findIndex((user) => user.id === id);
@@ -99,7 +133,7 @@ app.patch("/api/users/:id", (req, res) => {
       });
     }else{
       console.log(`No user avilable with id ${id}`);
-      return res.json({ status: "error", message: `no user exists with id ${id}` });
+      return res.status(400).json({ status: "error", message: `no user exists with id ${id}` });
     }
     
   });
@@ -114,16 +148,22 @@ app.patch("/api/users/:id", (req, res) => {
   
     if (user) {
       console.log(`${user.email} already exixts`);
-      return res.json({ status: "error", message: "Email already exists" });
+      return res.status(208).json({ status: "error", message: "Email already exists" });
       
-    } else {
+    }
+    else if(!body || Object.keys(body).length === 0){
+      console.log("no data provided for append");
+      return res.status(400).json({status: "error", message: "No data provided for append"});
+    }
+    
+    else {
       users.push({ id: users.length + 1, ...body });
       fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), (err) => {
         if (err) {
           console.error(err);
           return res.json({ status: "error", message: "Failed to save user data" });
         }
-        return res.json({ status: "success", id: users.length });
+        return res.status(201).json({ status: "success", id: users.length });
       });
     }
   });

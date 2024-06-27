@@ -8001,9 +8001,17 @@
   },
   {
     "id": 1001,
-    "first_name": "Rohit",
+    "first_name": "Shubham",
     "last_name": "Dhatwalia",
     "email": "shubhamdhatwalia1@gmail.com",
+    "gender": "Male",
+    "job_title": "Intern"
+  },
+  {
+    "id": 1002,
+    "first_name": "Rohit",
+    "last_name": "Sharma",
+    "email": "rohit@gmail.com",
     "gender": "Male",
     "job_title": "Intern"
   }

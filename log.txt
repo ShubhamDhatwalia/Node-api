@@ -72,3 +72,6 @@
 1719492994586    ::1    GET    /favicon.ico
 1719493567827    ::1    GET    /api/users
 1719493590088    ::1    GET    /api/users
+1719548395443    ::1    GET    /
+1719548406917    ::1    GET    /api/users
+1719548407112    ::1    GET    /favicon.ico
